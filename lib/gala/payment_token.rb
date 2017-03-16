@@ -62,13 +62,13 @@ module Gala
         raise InvalidSignatureError, "Unable to verify a valid chain of trust from signature to root certificate." unless chain_of_trust_verified?(leaf_cert, intermediate_cert, root_cert)
 
         #Ensure that the signature is a valid ECDSA signature
-        unless application_data
+        #unless application_data
           verification_string = Base64.decode64(ephemeral_public_key) + Base64.decode64(data) + [transaction_id].pack("H*")
-          # verification_string = verification_string + application_data.pack("H*") if application_data
+          verification_string = verification_string + [application_data].pack("H*") if application_data
           store = OpenSSL::X509::Store.new
           verified = p7.verify([], store, verification_string, OpenSSL::PKCS7::NOVERIFY )
           raise InvalidSignatureError, "The given signature is not a valid ECDSA signature." unless verified
-        end
+        #end
       end
 
       def chain_of_trust_verified?(leaf_cert, intermediate_cert, root_cert)
